@@ -1,4 +1,4 @@
-//*********************************************
+package com.example.solitaireprototype2;//*********************************************
 // Solitaire Prototype 1 -- GUI Components
 // Version 2 -- Changes to exit button, event handlers, & menu bar made by Jenascia
 //
@@ -25,9 +25,14 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Optional;
+import java.util.Scanner;
+
 // GUI-only
 // Class for the user interface layout (no game logic)
-public class SolitairePrototype extends Application {
+public class SolitairePrototype2 extends Application {
 
     // UI labels for the status bar (Score, Moves, Timer)
     private Label lblScore = new Label("Score: 0");
@@ -83,19 +88,75 @@ public class SolitairePrototype extends Application {
         // Event handler to be added for 'New Game' here
         // Event handler to be added Code for 'Reset' here
 
+        // Menu Bar Exit Confirmation Dialog Box
+        Alert alertExitMB = new Alert(Alert.AlertType.CONFIRMATION);
+        alertExitMB.setTitle("Exit Confirmation");
+        alertExitMB.setHeaderText("Exit Solitaire?");
+        alertExitMB.setContentText("Are you sure you want to close Solitaire?");
+
+        // File Not Found Dialog Box
+        Alert alertFNF = new Alert(Alert.AlertType.ERROR);
+        alertFNF.setTitle("FileNotFoundException");
+        alertFNF.setHeaderText("File Not Found");
+        alertFNF.setContentText("The Rules file could not be located");
+        alertFNF.hide();
+
         // Event handler for menu bar 'Exit'
-        miExit.setOnAction(e -> System.exit(0));
+        miExit.setOnAction(e -> {
+            Optional<ButtonType> result = alertExitMB.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                System.exit(0);
+            } else {
+
+            }
+        });
 
         mGame.getItems().addAll(miNew, miReset, new SeparatorMenuItem(), miExit);
 
         Menu mView = new Menu("View");
-        mView.getItems().add(new CheckMenuItem("Show Hints"));
+        MenuItem hintsItem = new MenuItem("Hints");
+        mView.getItems().addAll(hintsItem);
+        // mView.getItems().add(new CheckMenuItem("Show Hints"));
 
         Menu mHelp = new Menu("Help");
-        mHelp.getItems().add(new MenuItem("Rules"));
+        MenuItem rulesItem = new MenuItem("Rules");
+        mHelp.getItems().addAll(rulesItem);
+        //mHelp.getItems().add(new MenuItem("Rules"));
 
         return new MenuBar(mGame, mView, mHelp);
+
+        // 'Help - Rules' Event Handler
+        rulesItem.setOnAction(e -> {
+            // Imported Text for Rules
+            File rulesFile = new File("Rules");
+
+            try (Scanner ruleFileReader = new Scanner(rulesFile)) {
+                while (ruleFileReader.hasNextLine()) {
+                    String rules = ruleFileReader.nextLine();
+                    System.out.println(rules);
+                }
+            } catch (FileNotFoundException s) {
+                alertFNF.showAndWait();
+            }
+        });
+
+        // 'View - Hints' Event Handler
+        hintsItem.setOnAction(e -> {
+            // Imported Text for Hints
+            File rulesFile = new File("Hints");
+
+            try (Scanner hintFileReader = new Scanner(rulesFile)) {
+                while (hintFileReader.hasNextLine()) {
+                    String hints = hintFileReader.nextLine();
+                    System.out.println(hints);
+                }
+            } catch (FileNotFoundException e) {
+                alertFNF.showAndWait();
+            }
+        });
     }
+
+
 
     // Create the toolbar with buttons and game selector
     private ToolBar buildToolBar() {
@@ -124,10 +185,21 @@ public class SolitairePrototype extends Application {
             // CODE FOR UNDO BUTTON HERE
         });
 
+        // Exit Confirmation Dialog Box
+        Alert alertExitB = new Alert(Alert.AlertType.CONFIRMATION);
+        alertExitB.setTitle("Exit Confirmation");
+        alertExitB.setHeaderText("Exit Solitaire?");
+        alertExitB.setContentText("Are you sure you want to close Solitaire?");
+
         // Event Listener for Exit button
         btnExit.setOnMouseReleased(e ->
         {
-            System.exit(0);
+            Optional<ButtonType> result = alertExitB.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                System.exit(0);
+            } else {
+
+            }
         });
 
         cboVariant.setPrefWidth(160);
